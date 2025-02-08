@@ -7,7 +7,7 @@ function App() {
     email: "",
     telefone: "",
     empresa: "",
-    areaAtuacao: "",
+    googleGmn: "",
     desafio: "",
     motivo: ""
   });
@@ -423,15 +423,15 @@ function App() {
               />
             </div>
             <div>
-              <label htmlFor="areaAtuacao" className="block text-sm font-medium text-gray-700 mb-1">Área de Atuação</label>
+              <label htmlFor="googleGmn" className="block text-sm font-medium text-gray-700 mb-1">Seu Google Meu Negócio</label>
               <input
                 type="text"
-                id="areaAtuacao"
-                name="areaAtuacao"
-                value={formData.areaAtuacao}
+                id="googleGmn"
+                name="googleGmn"
+                value={formData.googleGmn}
                 onChange={handleChange}
                 className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
-                placeholder="Sua área de atuação"
+                placeholder="Seu perfil no google"
               />
             </div>
             <div>
