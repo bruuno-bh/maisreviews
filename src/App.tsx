@@ -3,12 +3,13 @@ import { Star, CheckCircle, BarChart3, MessageSquare, Settings, Users, ArrowRigh
 
 function App() {
   const [formData, setFormData] = useState({
-    nome: '',
-    email: '',
-    telefone: '',
-    empresa: '',
-    motivo: '',
-    desafio: ''
+    nome: "",
+    email: "",
+    telefone: "",
+    empresa: "",
+    areaAtuacao: "",
+    desafio: "",
+    motivo: ""
   });
 
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -41,9 +42,21 @@ function App() {
     }));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log(formData);
+    try {
+      await fetch("https://flow.bhbdigital.com.br/webhook/site_google_reviews", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(formData),
+      });
+      alert("Obrigado! Entraremos em contato em breve.");
+    } catch (error) {
+      console.error("Erro ao enviar o formulário:", error);
+      alert("Ocorreu um erro ao enviar o formulário. Tente novamente.");
+    }
   };
 
   const scrollToForm = () => {
@@ -66,7 +79,7 @@ function App() {
           <div className="flex items-center justify-between h-16">
             <div className="flex items-center gap-2">
               <Star className="w-6 h-6 text-green-600" />
-              <span className="font-bold text-green-900">ReviewBooster</span>
+              <span className="font-bold text-green-900">Mais Reviews</span>
             </div>
             
             {/* Mobile Menu Button */}
@@ -350,106 +363,131 @@ function App() {
         </section>
 
         {/* Form Section */}
-        <section id="form" className="py-20 bg-green-900">
-          <div className="container mx-auto px-4">
-            <div className="max-w-2xl mx-auto">
-              <h2 className="text-3xl font-bold text-white mb-6 text-center">Solicite Suas 10 Avaliações Gratuitas</h2>
-              <form onSubmit={handleSubmit} className="space-y-6 bg-white p-8 rounded-xl shadow-lg">
-                <div>
-                  <label htmlFor="nome" className="block text-sm font-medium text-gray-700 mb-1">Nome Completo</label>
-                  <input
-                    type="text"
-                    id="nome"
-                    name="nome"
-                    value={formData.nome}
-                    onChange={handleChange}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
-                    placeholder="Seu nome"
-                    required
-                  />
-                </div>
-                <div>
-                  <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">E-mail</label>
-                  <input
-                    type="email"
-                    id="email"
-                    name="email"
-                    value={formData.email}
-                    onChange={handleChange}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
-                    placeholder="Seu melhor e-mail"
-                    required
-                  />
-                </div>
-                <div>
-                  <label htmlFor="telefone" className="block text-sm font-medium text-gray-700 mb-1">Telefone</label>
-                  <input
-                    type="tel"
-                    id="telefone"
-                    name="telefone"
-                    value={formData.telefone}
-                    onChange={handleChange}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
-                    placeholder="(XX) XXXXX-XXXX"
-                    required
-                  />
-                </div>
-                <div>
-                  <label htmlFor="empresa" className="block text-sm font-medium text-gray-700 mb-1">Empresa</label>
-                  <input
-                    type="text"
-                    id="empresa"
-                    name="empresa"
-                    value={formData.empresa}
-                    onChange={handleChange}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
-                    placeholder="Nome da sua empresa"
-                    required
-                  />
-                </div>
-                <div>
-                  <label htmlFor="motivo" className="block text-sm font-medium text-gray-700 mb-1">Por que devemos aceitar sua empresa para as avaliações gratuitas?</label>
-                  <textarea
-                    id="motivo"
-                    name="motivo"
-                    value={formData.motivo}
-                    onChange={handleChange}
-                    rows={4}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
-                    placeholder="Conte-nos o motivo"
-                  />
-                </div>
-                <div>
-                  <label htmlFor="desafio" className="block text-sm font-medium text-gray-700 mb-1">Qual é o principal desafio do seu negócio hoje?</label>
-                  <textarea
-                    id="desafio"
-                    name="desafio"
-                    value={formData.desafio}
-                    onChange={handleChange}
-                    rows={4}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
-                    placeholder="Explique seu maior desafio"
-                  />
-                </div>
-                <button
-                  type="submit"
-                  className="w-full bg-green-600 text-white py-3 px-6 rounded-lg font-semibold hover:bg-green-700 transition-colors flex items-center justify-center gap-2"
-                >
-                  Solicitar Avaliações Gratuitas
-                  <ArrowRight className="w-5 h-5" />
-                </button>
-              </form>
+       <section id="form" className="py-20 bg-green-900">
+      <div className="container mx-auto px-4">
+        <div className="max-w-2xl mx-auto">
+          <h2 className="text-3xl font-bold text-white mb-6 text-center">
+            Solicite Suas 10 Avaliações Gratuitas
+          </h2>
+          <form onSubmit={handleSubmit} className="space-y-6 bg-white p-8 rounded-xl shadow-lg">
+            <div>
+              <label htmlFor="nome" className="block text-sm font-medium text-gray-700 mb-1">Nome Completo</label>
+              <input
+                type="text"
+                id="nome"
+                name="nome"
+                value={formData.nome}
+                onChange={handleChange}
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                placeholder="Seu nome completo"
+                required
+              />
+            </div>
+            <div>
+              <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">E-mail</label>
+              <input
+                type="email"
+                id="email"
+                name="email"
+                value={formData.email}
+                onChange={handleChange}
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                placeholder="Seu melhor e-mail"
+                required
+              />
+            </div>
+            <div>
+              <label htmlFor="telefone" className="block text-sm font-medium text-gray-700 mb-1">Telefone</label>
+              <input
+                type="tel"
+                id="telefone"
+                name="telefone"
+                value={formData.telefone}
+                onChange={handleChange}
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                placeholder="(XX) XXXXX-XXXX"
+                required
+              />
+            </div>
+            <div>
+              <label htmlFor="empresa" className="block text-sm font-medium text-gray-700 mb-1">Nome da Empresa</label>
+              <input
+                type="text"
+                id="empresa"
+                name="empresa"
+                value={formData.empresa}
+                onChange={handleChange}
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                placeholder="Nome da sua empresa"
+                required
+              />
+            </div>
+            <div>
+              <label htmlFor="areaAtuacao" className="block text-sm font-medium text-gray-700 mb-1">Área de Atuação</label>
+              <input
+                type="text"
+                id="areaAtuacao"
+                name="areaAtuacao"
+                value={formData.areaAtuacao}
+                onChange={handleChange}
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                placeholder="Sua área de atuação"
+              />
+            </div>
+            <div>
+              <label htmlFor="desafio" className="block text-sm font-medium text-gray-700 mb-1">Qual é o principal desafio do seu negócio hoje?</label>
+              <textarea
+                id="desafio"
+                name="desafio"
+                value={formData.desafio}
+                onChange={handleChange}
+                rows={4}
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                placeholder="Explique seu maior desafio"
+              />
+            </div>
+            <div>
+              <label htmlFor="motivo" className="block text-sm font-medium text-gray-700 mb-1">Por que devemos aceitar sua empresa para as avaliações gratuitas? </label>
+              <textarea
+                id="motivo"
+                name="motivo"
+                value={formData.motivo}
+                onChange={handleChange}
+                rows={4}
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                placeholder="Conte-nos o motivo"
+              />
+            </div>
+            <button
+              type="submit"
+              className="w-full bg-green-600 text-white py-3 px-6 rounded-lg font-semibold hover:bg-green-700 transition-colors flex items-center justify-center gap-2"
+            >
+              Solicitar Avaliações Gratuitas
+              <ArrowRight className="w-5 h-5" />
+            </button>
+          </form>
             </div>
           </div>
         </section>
       </main>
 
+     
       {/* Footer */}
-      <footer className="bg-green-950 py-8">
-        <div className="container mx-auto px-4 text-center text-green-100">
-          <p>© 2025 Todos os direitos reservados</p>
-        </div>
-      </footer>
+<footer className="bg-green-950 py-8">
+  <div className="container mx-auto px-4 text-center text-green-100">
+    <p>
+      <a 
+        href="https://www.google.com" 
+        target="_blank" 
+        rel="noopener noreferrer" 
+        className="underline hover:text-green-300 transition-colors"
+      >
+        Mais Reviews
+      </a> 
+      {" | © 2025 Todos os direitos reservados"}
+    </p>
+  </div>
+</footer>
     </div>
   );
 }
