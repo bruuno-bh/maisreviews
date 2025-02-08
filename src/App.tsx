@@ -42,6 +42,8 @@ function App() {
     }));
   };
 
+  const [showPopup, setShowPopup] = useState(false);
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
@@ -52,11 +54,58 @@ function App() {
         },
         body: JSON.stringify(formData),
       });
-      alert("Obrigado! Entraremos em contato em breve.");
+  
+      // Exibe o pop-up e limpa o formulário
+      setShowPopup(true);
+      setFormData({
+        nome: "",
+        email: "",
+        telefone: "",
+        empresa: "",
+        googleGmn: "",
+        desafio: "",
+        motivo: "",
+      });
     } catch (error) {
       console.error("Erro ao enviar o formulário:", error);
       alert("Ocorreu um erro ao enviar o formulário. Tente novamente.");
     }
+  };
+  
+  // Função para fechar o pop-up
+  const closePopup = () => {
+    setShowPopup(false);
+  };
+
+
+  const handlePhoneChange = (e) => {
+    let inputValue = e.target.value.replace(/\D/g, ""); // Remove não numéricos
+  
+    if (inputValue.length > 11) {
+      inputValue = inputValue.slice(0, 11); // Limita a 11 dígitos
+    }
+  
+    let formattedValue = "";
+  
+    if (inputValue.length > 6) {
+      const areaCode = inputValue.slice(0, 2);
+      const prefix = inputValue.slice(2, 7);
+      const lineNumber = inputValue.slice(7, 11);
+  
+      formattedValue = `(${areaCode}) ${prefix}-${lineNumber}`;
+    } else if (inputValue.length > 2) {
+      const areaCode = inputValue.slice(0, 2);
+      const prefix = inputValue.slice(2, 7);
+  
+      formattedValue = `(${areaCode}) ${prefix}`;
+    } else {
+      formattedValue = inputValue;
+    }
+  
+    setFormData((prev) => ({
+      ...prev,
+      telefone: formattedValue,
+    }));
   };
 
   const scrollToForm = () => {
@@ -73,58 +122,103 @@ function App() {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-green-50 to-white">
-      {/* Fixed Header */}
-      <header className="fixed top-0 left-0 right-0 bg-white shadow-md z-50">
-        <div className="container mx-auto px-4">
-          <div className="flex items-center justify-between h-16">
-            <div className="flex items-center gap-2">
-              <Star className="w-6 h-6 text-green-600" />
-              <span className="font-bold text-green-900">Mais Reviews</span>
-            </div>
-            
-            {/* Mobile Menu Button */}
-            <button 
-              className="md:hidden p-2"
-              onClick={() => setIsMenuOpen(!isMenuOpen)}
+       {/* ✅ Pop-up de Confirmação */}
+       {showPopup && (
+        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
+          <div className="bg-green-900 text-white p-6 rounded-lg shadow-lg text-center w-80">
+            <h2 className="text-lg font-bold mb-4">Sucesso!</h2>
+            <p>Obrigado! Entraremos em contato em breve.</p>
+            <button
+              onClick={closePopup}
+              className="mt-4 bg-white text-green-900 py-2 px-6 rounded-lg font-semibold hover:bg-gray-200 transition"
             >
-              {isMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+              OK
             </button>
-
-            {/* Desktop Navigation */}
-            <nav className="hidden md:flex items-center gap-6">
-              {navItems.map(item => (
-                <a
-                  key={item.id}
-                  href={`#${item.id}`}
-                  className={`text-sm font-medium transition-colors hover:text-green-600 ${
-                    activeSection === item.id ? 'text-green-600' : 'text-gray-600'
-                  }`}
-                >
-                  {item.label}
-                </a>
-              ))}
-            </nav>
           </div>
         </div>
+      )}
+      {/* Fixed Header */}
+      <header className="fixed top-0 left-0 right-0 bg-white shadow-md z-50">
+  <div className="container mx-auto px-4">
+    <div className="flex items-center justify-between h-16">
+      {/* ✅ Link para o site */}
+      <a
+        href="https://maisreviews.site/"
+        target="_blank"
+        rel="noopener noreferrer"
+        className="flex items-center gap-2"
+      >
+        <Star className="w-6 h-6 text-green-600" />
+        <span className="font-bold text-green-900">Mais Reviews</span>
+      </a>
 
-        {/* Mobile Navigation */}
-        {isMenuOpen && (
-          <div className="md:hidden bg-white border-t">
-            {navItems.map(item => (
-              <a
-                key={item.id}
-                href={`#${item.id}`}
-                className={`block px-4 py-2 text-sm font-medium ${
-                  activeSection === item.id ? 'text-green-600 bg-green-50' : 'text-gray-600'
-                }`}
-                onClick={() => setIsMenuOpen(false)}
-              >
-                {item.label}
-              </a>
-            ))}
-          </div>
-        )}
-      </header>
+      {/* ✅ Menu Desktop (mantendo os itens visíveis) */}
+      <nav className="hidden md:flex items-center gap-6">
+        {navItems.map((item) => (
+          <a
+            key={item.id}
+            href={`#${item.id}`}
+            className={`text-sm font-medium transition-colors hover:text-green-600 ${
+              activeSection === item.id ? "text-green-600" : "text-gray-600"
+            }`}
+          >
+            {item.label}
+          </a>
+        ))}
+      </nav>
+
+      {/* ✅ Botão "Iniciar Agora" no Desktop (mantendo o menu) */}
+      <div className="hidden md:block">
+        <button
+          onClick={scrollToForm}
+          className="bg-green-600 text-white py-3 px-6 rounded-lg font-semibold hover:bg-green-700 transition-colors flex items-center gap-2"
+        >
+          Iniciar Agora
+          <ArrowRight className="w-5 h-5" />
+        </button>
+      </div>
+
+      {/* Mobile Menu Button */}
+      <div className="flex items-center gap-4 md:hidden">
+        {/* ✅ Botão "Iniciar Agora" sempre visível no Mobile */}
+        <button
+          onClick={scrollToForm}
+          className="bg-green-600 text-white py-2 px-4 rounded-lg font-semibold hover:bg-green-700 transition-colors flex items-center gap-2 text-sm"
+        >
+          Iniciar Agora
+        </button>
+
+        {/* Botão do Menu Mobile */}
+        <button className="p-2" onClick={() => setIsMenuOpen(!isMenuOpen)}>
+          {isMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+        </button>
+      </div>
+    </div>
+  </div>
+
+  {/* ✅ Menu Mobile */}
+  {isMenuOpen && (
+    <div className="md:hidden bg-white border-t p-4">
+      <nav className="flex flex-col gap-3">
+        {navItems.map((item) => (
+          <a
+            key={item.id}
+            href={`#${item.id}`}
+            className={`block text-sm font-medium px-4 py-2 ${
+              activeSection === item.id
+                ? "text-green-600 bg-green-50"
+                : "text-gray-600"
+            }`}
+            onClick={() => setIsMenuOpen(false)}
+          >
+            {item.label}
+          </a>
+        ))}
+      </nav>
+    </div>
+  )}
+</header>
+
 
       {/* Main Content with padding for fixed header */}
       <main className="pt-16">
@@ -371,7 +465,7 @@ function App() {
           </h2>
           <form onSubmit={handleSubmit} className="space-y-6 bg-white p-8 rounded-xl shadow-lg">
             <div>
-              <label htmlFor="nome" className="block text-sm font-medium text-gray-700 mb-1">Nome Completo</label>
+              <label htmlFor="nome" className="block text-sm font-medium text-gray-700 mb-1">Nome</label>
               <input
                 type="text"
                 id="nome"
@@ -379,7 +473,7 @@ function App() {
                 value={formData.nome}
                 onChange={handleChange}
                 className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
-                placeholder="Seu nome completo"
+                placeholder="Seu nome"
                 required
               />
             </div>
@@ -397,13 +491,16 @@ function App() {
               />
             </div>
             <div>
-              <label htmlFor="telefone" className="block text-sm font-medium text-gray-700 mb-1">Telefone</label>
+              <label htmlFor="telefone" className="block text-sm font-medium text-gray-700 mb-1">
+                Telefone
+              </label>
               <input
                 type="tel"
                 id="telefone"
                 name="telefone"
                 value={formData.telefone}
-                onChange={handleChange}
+                onChange={handlePhoneChange}
+                maxLength={15}
                 className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
                 placeholder="(XX) XXXXX-XXXX"
                 required
@@ -432,6 +529,7 @@ function App() {
                 onChange={handleChange}
                 className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
                 placeholder="Seu perfil no google"
+                required
               />
             </div>
             <div>
@@ -444,6 +542,7 @@ function App() {
                 rows={4}
                 className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
                 placeholder="Explique seu maior desafio"
+                required
               />
             </div>
             <div>
@@ -456,6 +555,7 @@ function App() {
                 rows={4}
                 className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
                 placeholder="Conte-nos o motivo"
+                required
               />
             </div>
             <button
